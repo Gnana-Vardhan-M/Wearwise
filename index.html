@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#244f40">
+<meta name="description" content="A private, offline-first outfit picker for your own wardrobe.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Wearwise — Outfit Picker</title>
+<style>
+:root{--bg:#f4f3ee;--card:#fff;--ink:#202720;--muted:#6b746c;--line:#e3e2da;--green:#244f40;--soft:#e8f0eb;--red:#a43e36}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:760px;margin:auto;padding:20px 14px calc(28px + env(safe-area-inset-bottom))}header{padding:9px 2px 17px}header small{font-weight:850;letter-spacing:.13em;color:var(--green)}h1{font-size:clamp(2.1rem,9vw,3.2rem);line-height:1.03;letter-spacing:-.04em;margin:7px 0}h2{font-size:1.1rem;margin:0 0 12px}p{margin:5px 0}.muted,.hint{color:var(--muted)}.hint{font-size:.88rem}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.tabs{display:flex;gap:7px;margin:10px 0 14px}.tab{flex:1;background:#e8e7df;color:var(--ink);padding:11px 8px}.tab.active{background:var(--green);color:#fff}button{border:0;border-radius:12px;padding:12px 14px;background:var(--green);color:#fff;font:inherit;font-weight:750;cursor:pointer}button.secondary{background:var(--soft);color:var(--green);border:1px solid #d8e3dc}button.ghost{background:#f1f0eb;color:var(--ink)}button:disabled{opacity:.45}input,select{font:inherit;min-width:0;width:100%;border:1px solid #d8d8d0;border-radius:11px;padding:11px;background:#fff;color:var(--ink)}label{font-size:.9rem;font-weight:700;display:block;margin:8px 0 5px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}.status{background:#f0efe9;padding:10px 12px;border-radius:11px;font-size:.9rem;margin-top:10px;overflow-wrap:anywhere}.stats{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.pill{background:var(--soft);color:var(--green);font-size:.82rem;font-weight:750;border-radius:99px;padding:4px 9px}.look{border:1px solid var(--line);border-radius:15px;padding:13px;margin:10px 0}.lookhead{display:flex;align-items:center;justify-content:space-between;gap:8px}.lookhead strong{font-size:1.02rem}.items{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-top:10px}.item{border:1px solid var(--line);border-radius:12px;padding:9px;min-width:0}.item img{display:block;width:100%;height:140px;object-fit:contain;background:#f7f6f1;border-radius:8px;margin-bottom:7px}.itemname{font-weight:800;overflow-wrap:anywhere}.meta{font-size:.83rem;color:var(--muted)}.swatch{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid #0002;vertical-align:-1px;margin-right:5px}.lookbuttons{display:flex;gap:8px;margin-top:11px}.lookbuttons button{flex:1;font-size:.92rem}.closetrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.closetrow:last-child{border-bottom:0}.thumb{width:54px;height:58px;object-fit:contain;background:#f7f6f1;border-radius:8px}.closetinfo{flex:1;min-width:0}.closetinfo strong{display:block;overflow-wrap:anywhere}.tiny{font-size:.8rem;padding:7px 9px}.hidden{display:none!important}.empty{text-align:center;color:var(--muted);padding:20px 6px}.notice{font-size:.86rem;background:#fff4d9;border-radius:11px;padding:10px 12px;margin-top:10px}.filelabel{display:block;text-align:center;border:1px dashed #b9c5bc;background:#f8faf8;border-radius:12px;padding:13px;color:var(--green);font-weight:750}.filelabel input{margin-top:8px;border:0;padding:0;background:transparent}.footer{text-align:center;font-size:.82rem;color:var(--muted);padding:12px}
+@media(max-width:390px){.grid2{grid-template-columns:1fr}.items{grid-template-columns:repeat(2,minmax(0,1fr))}.item img{height:112px}.card{padding:13px}}
+</style>
+</head>
+<body>
+<main>
+<header><small>YOUR WARDROBE, LESS REPETITION</small><h1>Wearwise</h1><p class="muted">Add clothes, make a compact backup, and let your wardrobe pick an outfit.</p></header>
+<div class="tabs">
+<button class="tab active" data-tab="generate">Outfits</button>
+<button class="tab" data-tab="clothes">My clothes</button>
+<button class="tab" data-tab="data">Backup</button>
+</div>
+
+<section id="pane-generate">
+<div class="card">
+<h2>What should I wear?</h2>
+<div class="grid2">
+<div><label for="number">Outfits to suggest</label><select id="number"><option value="1">1 outfit</option><option value="3" selected>3 outfits</option><option value="5">5 outfits</option></select></div>
+<div><label for="bottomFilter">Bottom type</label><select id="bottomFilter"><option value="any">Any</option><option value="pants">Pants / jeans</option><option value="shorts">Shorts</option><option value="skirts">Skirts</option></select></div>
+</div>
+<label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input id="avoidRecent" type="checkbox" checked style="width:18px;height:18px"> Prefer clothes not worn in the last 3 days</label>
+<div class="row" style="margin-top:13px"><button id="generate" disabled>Generate outfits</button><button id="resetHistory" class="secondary" disabled>Reset history</button></div>
+<div id="summary" class="stats"></div>
+<div id="outfitStatus" class="status">Add clothes or import your WardrobeWise backup in the Backup tab.</div>
+</div>
+<div class="card"><h2>Your suggestions</h2><div id="results" class="empty">Your outfits will appear here.</div></div>
+</section>
+
+<section id="pane-clothes" class="hidden">
+<div class="card">
+<h2>Add a clothing item</h2>
+<div class="grid2">
+<div><label for="itemName">Name *</label><input id="itemName" placeholder="e.g. Black oversized tee"></div>
+<div><label for="itemCategory">Category *</label><select id="itemCategory"><option value="Shirt">Shirt / top</option><option value="T-shirt">T-shirt</option><option value="Polo">Polo</option><option value="Hoodie">Hoodie</option><option value="Jacket">Jacket / layer</option><option value="Pants">Pants / trousers</option><option value="Jeans">Jeans</option><option value="Shorts">Shorts</option><option value="Skirt">Skirt</option><option value="Shoes">Shoes</option><option value="Dress">Dress</option><option value="Other">Other</option></select></div>
+<div><label for="itemColor">Colour</label><input id="itemColor" placeholder="e.g. Black"></div>
+<div><label for="itemHex">Colour swatch</label><input id="itemHex" type="color" value="#333333" style="height:45px;padding:5px"></div>
+</div>
+<label for="itemPhoto">Photo (optional; automatically compressed)</label><input id="itemPhoto" type="file" accept="image/*">
+<p class="hint">Photos are resized to small thumbnails before being saved in your compact JSON.</p>
+<button id="addItem" style="width:100%;margin-top:12px">Add to wardrobe</button>
+</div>
+<div class="card"><h2>Clothes in your wardrobe</h2><div id="closet" class="empty">No clothes added yet.</div></div>
+</section>
+
+<section id="pane-data" class="hidden">
+<div class="card">
+<h2>Import your existing wardrobe</h2>
+<p class="hint">Load a WardrobeWise backup or a Wearwise compact JSON file. The original file is not changed.</p>
+<label class="filelabel">Choose JSON backup<input id="importFile" type="file" accept=".json,application/json"></label>
+<div id="importStatus" class="status">Nothing imported yet.</div>
+</div>
+<div class="card">
+<h2>Make a compact JSON</h2>
+<p class="hint">Exports only clothing details, small compressed photos, and wear history. It leaves out unused colours, saved outfit plans and unrelated app data.</p>
+<div class="stats" id="backupStats"></div>
+<div class="row" style="margin-top:12px"><button id="exportBtn" disabled>Download compact JSON</button><button id="clearBtn" class="secondary">Clear this app</button></div>
+<div class="notice">Keep a copy of your exported JSON somewhere safe. This file is a Wearwise backup, not a replacement backup to restore inside WardrobeWise.</div>
+</div>
+</section>
+<div class="footer">Offline-first · No account · No subscription · Your data stays on this device unless you export it.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const DBKEY="wearwise-compact-data-v1";
+let db={v:1,items:[],history:[]};
+let tempPhoto="";
+function uid(){return "i-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+function save(){try{localStorage.setItem(DBKEY,JSON.stringify(db));return true}catch(e){return false}}
+function loadSaved(){try{const d=JSON.parse(localStorage.getItem(DBKEY)||"null");if(d&&d.v===1&&Array.isArray(d.items))db=d}catch(e){}}
+function norm(s){return String(s||"").toLowerCase().trim()}
+function cat(i){return norm(i.c)}
+function isDress(i){return /dress|jumpsuit|romper/.test(cat(i))}
+function isTop(i){return !isDress(i)&&/shirt|t-shirt|tee|top|polo|blouse|sweater|hoodie|kurta|vest|tank|crop/.test(cat(i))}
+function isBottom(i){return /pant|trouser|jean|short|skirt|legging|bottom|chino|jogger/.test(cat(i))}
+function isFoot(i){return /shoe|sneaker|boot|sandal|footwear|slipper|loafer|heel|trainer/.test(cat(i))}
+function isLayer(i){return /jacket|coat|blazer|cardigan|overshirt|outerwear/.test(cat(i))}
+function dayAgo(t){return t?Math.floor((Date.now()-t)/86400000):9999}
+function lastWorn(i){return Math.max(Number(i.lw)||0,...db.history.filter(h=>h.ids.includes(i.id)).map(h=>Number(h.t)||0))}
+function hexFor(i){return i.h||"#d7d7d7"}
+function colorScore(a,b){
+ const x=norm(a.col),y=norm(b.col);
+ const neutral=s=>/black|white|gray|grey|beige|cream|ivory|charcoal|brown|navy|denim|khaki|tan/.test(s);
+ if(!x||!y)return 0;
+ if(x===y)return 2;
+ if(neutral(x)||neutral(y))return 3;
+ const pairs=[["green","brown"],["green","cream"],["blue","orange"],["blue","brown"],["blue","white"],["red","navy"],["pink","gray"],["pink","blue"],["purple","yellow"],["olive","black"],["navy","white"],["brown","cream"],["burgundy","cream"],["teal","tan"]];
+ return pairs.some(p=>(x.includes(p[0])&&y.includes(p[1]))||(x.includes(p[1])&&y.includes(p[0])))?2:-1;
+}
+function wearCount(i){return db.history.filter(h=>h.ids.includes(i.id)).length}
+function itemPenalty(i){const d=dayAgo(lastWorn(i));const recent=d===0?10:d===1?7:d===2?4:d<7?2:0;return recent+Math.min(5,wearCount(i)*0.45)}
+function comboHistoryPenalty(arr){return db.history.reduce((sum,h)=>sum+(arr.length>=2&&arr.every(i=>h.ids.includes(i.id))?9:0),0)}
+function comboScore(arr){
+ let score=0;
+ for(let a=0;a<arr.length;a++)for(let b=a+1;b<arr.length;b++)score+=colorScore(arr[a],arr[b]);
+ score-=arr.reduce((sum,i)=>sum+itemPenalty(i),0);
+ score-=comboHistoryPenalty(arr);
+ return score;
+}
+function escapeText(s){return String(s??"")}
+function fileAsData(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
+function compressData(data,maxW=260,maxH=320,quality=.68){return new Promise(resolve=>{if(!data||!String(data).startsWith("data:image/"))return resolve("");const img=new Image();img.onload=()=>{try{const ratio=Math.min(1,maxW/img.width,maxH/img.height);const c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.width*ratio));c.height=Math.max(1,Math.round(img.height*ratio));c.getContext("2d").drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",quality))}catch(e){resolve("")}};img.onerror=()=>resolve("");img.src=data})}
+function dataSize(){return new Blob([JSON.stringify(db)]).size}
+function fmtSize(n){if(n<1024)return n+" B";if(n<1024*1024)return (n/1024).toFixed(1)+" KB";return (n/1024/1024).toFixed(2)+" MB"}
+function updateUI(){const n=db.items.length, tops=db.items.filter(isTop).length, bottoms=db.items.filter(isBottom).length;$("summary").innerHTML="";[[n+" items"],[tops+" tops"],[bottoms+" bottoms"],[fmtSize(dataSize())+" compact data"]].forEach(([t])=>{const s=document.createElement("span");s.className="pill";s.textContent=t;$("summary").append(s)});$("generate").disabled=!n;$("resetHistory").disabled=!db.history.length;$("exportBtn").disabled=!n;$("backupStats").innerHTML="";[["Clothes",n],["Wear records",db.history.length],["Compact file",fmtSize(dataSize())]].forEach(([k,v])=>{const s=document.createElement("span");s.className="pill";s.textContent=k+": "+v;$("backupStats").append(s)});renderCloset()}
+function addCardImage(parent,i){if(!i.img)return;const im=document.createElement("img");im.src=i.img;im.alt=i.n;parent.append(im)}
+function renderCloset(){const root=$("closet");root.innerHTML="";if(!db.items.length){root.className="empty";root.textContent="No clothes added yet.";return}root.className="";db.items.forEach(i=>{const row=document.createElement("div");row.className="closetrow";if(i.img){const im=document.createElement("img");im.className="thumb";im.src=i.img;im.alt="";row.append(im)}const info=document.createElement("div");info.className="closetinfo";const strong=document.createElement("strong");strong.textContent=i.n;const meta=document.createElement("span");meta.className="meta";meta.textContent=i.c+" · "+(i.col||"No colour");info.append(strong,meta);const del=document.createElement("button");del.className="secondary tiny";del.textContent="Remove";del.onclick=()=>{db.items=db.items.filter(x=>x.id!==i.id);db.history=db.history.filter(h=>!h.ids.includes(i.id));save();updateUI();$("outfitStatus").textContent="Item removed."};row.append(info,del);root.append(row)})}
+function makeItem(i){const el=document.createElement("div");el.className="item";addCardImage(el,i);const name=document.createElement("div");name.className="itemname";name.textContent=i.n;const meta=document.createElement("div");meta.className="meta";const sw=document.createElement("span");sw.className="swatch";sw.style.background=hexFor(i);meta.append(sw,document.createTextNode(i.c+" · "+(i.col||"Colour not set")));const recent=document.createElement("div");recent.className="meta";const d=dayAgo(lastWorn(i));recent.textContent=d===9999?"Not marked worn":d===0?"Worn today":"Last worn "+d+" day(s) ago";el.append(name,meta,recent);return el}
+function comboKey(a){return a.map(i=>i.id).sort().join("|")}
+function renderOutfits(looks,message=""){const root=$("results");root.innerHTML="";root.className="";if(message){const st=document.createElement("div");st.className="status";st.textContent=message;root.append(st)}if(!looks.length){root.className="empty";root.textContent="No outfit suggestions yet.";return}looks.forEach((combo,index)=>{const box=document.createElement("article");box.className="look";const head=document.createElement("div");head.className="lookhead";const title=document.createElement("strong");title.textContent="Outfit "+(index+1);const pill=document.createElement("span");pill.className="pill";pill.textContent="Try this";head.append(title,pill);box.append(head);const grid=document.createElement("div");grid.className="items";combo.forEach(i=>grid.append(makeItem(i)));box.append(grid);const actions=document.createElement("div");actions.className="lookbuttons";const worn=document.createElement("button");worn.textContent="I wore this";worn.onclick=()=>{db.history.push({t:Date.now(),ids:combo.map(i=>i.id)});db.history=db.history.slice(-300);const ok=save();updateUI();renderOutfits([combo],ok?"Marked worn. History saved on this device.":"Marked worn for this session, but browser storage is full. Export a backup to keep your history.");};const skip=document.createElement("button");skip.className="secondary";skip.textContent="Try another";skip.onclick=()=>generate(new Set([comboKey(combo)]));actions.append(worn,skip);box.append(actions);root.append(box)})}
+function generate(exclude=new Set()){
+ const filter=$("bottomFilter").value;
+ let tops=db.items.filter(isTop), bottoms=db.items.filter(isBottom), dresses=db.items.filter(isDress), shoes=db.items.filter(isFoot), layers=db.items.filter(isLayer);
+ bottoms=bottoms.filter(i=>filter==="any"||(filter==="pants"&&/pant|trouser|jean|chino|jogger/.test(cat(i)))||(filter==="shorts"&&/short/.test(cat(i)))||(filter==="skirts"&&/skirt/.test(cat(i))));
+ if($("avoidRecent").checked){
+   const fresh=arr=>arr.filter(i=>dayAgo(lastWorn(i))>=3);
+   const choose=arr=>fresh(arr).length?fresh(arr):arr;
+   tops=choose(tops);bottoms=choose(bottoms);dresses=choose(dresses);shoes=choose(shoes);layers=choose(layers);
+ }
+ const base=[];
+ for(const t of tops)for(const b of bottoms)base.push([t,b]);
+ for(const d of dresses)base.push([d]);
+ if(!base.length){
+   $("outfitStatus").textContent="Add at least one top and one bottom, or add a dress/jumpsuit. You can add items in My clothes or import a backup.";
+   renderOutfits([]);return;
+ }
+ // Build variants with optional shoes and one optional outer layer.
+ const candidates=[];
+ for(const core of base){
+   const shoeChoices=shoes.length?[null,...shoes]:[null];
+   const layerChoices=layers.length?[null,...layers]:[null];
+   for(const shoe of shoeChoices)for(const layer of layerChoices){
+     if(shoe&&core.includes(shoe))continue;
+     if(layer&&core.includes(layer))continue;
+     const arr=[...core,...(shoe?[shoe]:[]),...(layer?[layer]:[])];
+     const key=comboKey(arr);if(exclude.has(key))continue;
+     candidates.push({arr,key,score:comboScore(arr)+Math.random()*0.6});
+   }
+ }
+ candidates.sort((a,b)=>b.score-a.score);
+ const out=[],used=new Set(),requested=Number($("number").value);
+ // Greedy diversity: avoid using the same pieces in every suggestion when alternatives exist.
+ for(const c of candidates){
+   if(out.length>=requested)break;
+   if(out.some(x=>x.key===c.key))continue;
+   const reuse=c.arr.reduce((sum,i)=>sum+(used.has(i.id)?1:0),0);
+   c.diverseScore=c.score-reuse*2.5;
+   if(out.length===0||c.diverseScore>=Math.max(...candidates.slice(0,Math.min(12,candidates.length)).map(x=>x.score))-20){
+     out.push(c);c.arr.forEach(i=>used.add(i.id));
+   }
+ }
+ if(out.length<requested){
+   for(const c of candidates){if(out.length>=requested)break;if(!out.some(x=>x.key===c.key))out.push(c);}
+ }
+ $("outfitStatus").textContent=`Generated ${out.length} outfit suggestion(s) from ${db.items.length} items. Suggestions consider colour harmony, recent wear, past combinations, and variety.`;
+ renderOutfits(out.map(x=>x.arr));
+}
+function download(name,content,type="application/json"){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+function compactExport(){return {v:1,items:db.items.map(i=>({id:i.id,n:i.n,c:i.c,col:i.col||"",h:i.h||"",...(i.img?{img:i.img}:{}) ,...(i.lw?{lw:i.lw}:{})})),history:db.history.map(h=>({t:h.t,ids:h.ids}))}}
+async function importJson(file){const txt=await file.text(),obj=JSON.parse(txt);let newItems=[],newHist=[];if(obj&&obj.v===1&&Array.isArray(obj.items)){newItems=obj.items.map(i=>({id:String(i.id||uid()),n:String(i.n||"Unnamed item"),c:String(i.c||"Other"),col:String(i.col||""),h:String(i.h||"#d7d7d7"),img:typeof i.img==="string"?i.img:"",lw:Number(i.lw)||0}));newHist=Array.isArray(obj.history)?obj.history.filter(h=>Array.isArray(h.ids)).map(h=>({t:Number(h.t)||Date.now(),ids:h.ids.map(String)})):[];return {items:newItems,history:newHist,kind:"Wearwise compact JSON"}}
+const tables=obj.tables||{};const clothes=Array.isArray(tables.clothing_items)?tables.clothing_items:(Array.isArray(obj.clothing_items)?obj.clothing_items:[]);if(!clothes.length)throw Error("Couldn't find clothing_items in this JSON.");const colors=Array.isArray(tables.colors)?tables.colors:[];const colorById=new Map(colors.map(c=>[c.id,c]));const images=obj.images||{};const imageRows=Array.isArray(tables.images)?tables.images:[];const imageByItem={};imageRows.filter(x=>x.item_id&&x.image_url).forEach(x=>{if(!imageByItem[x.item_id]||x.is_cover)imageByItem[x.item_id]=x.image_url});for(const item of clothes){let col=String(item.color||"");const c=colorById.get(item.color_id);let h=c?.hex||"#d7d7d7";let img=typeof images[item.id]==="string"?images[item.id]:"";if(!img&&imageByItem[item.id]?.startsWith("data:image/"))img=imageByItem[item.id];if(img)img=await compressData(img);newItems.push({id:String(item.id||uid()),n:String(item.name||"Unnamed item"),c:String(item.category||"Other"),col,h,img,lw:item.last_worn?new Date(item.last_worn).getTime()||0:0})}const hist=Array.isArray(tables.worn_history)?tables.worn_history:[];newHist=hist.filter(h=>h.item_id&&h.worn_date).map(h=>({t:new Date(h.worn_date).getTime()||Date.now(),ids:[String(h.item_id)]}));return {items:newItems,history:newHist,kind:"WardrobeWise backup"}}
+$("addItem").onclick=async()=>{const n=$("itemName").value.trim(),c=$("itemCategory").value;if(!n){alert("Give the clothing item a name first.");return}let img=tempPhoto;if(img)img=await compressData(img);db.items.push({id:uid(),n,c,col:$("itemColor").value.trim(),h:$("itemHex").value,img,lw:0});save();$("itemName").value="";$("itemColor").value="";$("itemPhoto").value="";tempPhoto="";updateUI();$("outfitStatus").textContent="Clothing added. Generate an outfit whenever you're ready."};
+$("itemPhoto").onchange=async e=>{const f=e.target.files?.[0];if(!f){tempPhoto="";return}if(!f.type.startsWith("image/")){alert("Choose an image file.");return}tempPhoto=await fileAsData(f);$("importStatus").textContent="Photo selected; it will be compressed when saved."};
+$("importFile").onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{const result=await importJson(f);db.items=result.items;db.history=result.history;const ok=save();updateUI();$("importStatus").textContent=`Imported ${db.items.length} clothes from ${result.kind}. Photos were compressed for the compact format. ${ok?"Saved locally.":"Browser storage is full; export the compact JSON now."}`;$("outfitStatus").textContent="Wardrobe imported. Generate your first outfit.";document.querySelector('[data-tab="generate"]').click()}catch(err){$("importStatus").textContent="Import failed: "+err.message}};
+$("generate").onclick=()=>generate();
+$("resetHistory").onclick=()=>{if(confirm("Clear the recent-wear history? Your clothing list will stay.")){db.history=[];save();updateUI();$("outfitStatus").textContent="Wear history cleared."}};
+$("exportBtn").onclick=()=>download("wearwise-compact-"+new Date().toISOString().slice(0,10)+".json",JSON.stringify(compactExport()));
+$("clearBtn").onclick=()=>{if(confirm("Delete this app's clothing list and history from this browser? Export a backup first if you want to keep it.")){db={v:1,items:[],history:[]};save();updateUI();$("results").className="empty";$("results").textContent="Your outfits will appear here.";$("importStatus").textContent="App data cleared."}};
+document.querySelectorAll("[data-tab]").forEach(btn=>btn.onclick=()=>{document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b===btn));["generate","clothes","data"].forEach(t=>$("pane-"+t).classList.toggle("hidden",t!==btn.dataset.tab));if(btn.dataset.tab==="clothes")renderCloset();if(btn.dataset.tab==="data")updateUI()});
+loadSaved();updateUI();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(err => console.warn("Offline cache setup failed:", err)));
+}
+</script>
+</body>
+</html>
